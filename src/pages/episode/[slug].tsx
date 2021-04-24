@@ -2,9 +2,11 @@ import { format, parseISO } from 'date-fns'
 import enUS from 'date-fns/locale/en-US';
 import { GetStaticProps } from 'next';
 import { GetStaticPaths } from 'next';
+import Head from 'next/Head'
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { usePlayer } from '../../contexts/PlayerContext';
 import { api } from '../../services/api'
 import { convertDurationToTime } from '../../utils/convertDurationToTime';
 
@@ -16,7 +18,7 @@ type Episode = {
     members: string;
     thumbnail: string;
     publishedAt: string;
-    duration: string;
+    duration: number;
     durationString: string;
     description: string;
     url: string;
@@ -27,8 +29,14 @@ type EpisodeProps = {
 }
 
 export default function Episode({ episode }: EpisodeProps) {
+    const { play } = usePlayer();
+
     return (
         <div className={styles.episode}>
+            <Head>
+                <title>{episode.title} | Podcastr</title>
+            </Head>
+
             <div className={styles.thumbnailContainer}>
                 <Link href="/">
                     <button type="button">
@@ -40,7 +48,7 @@ export default function Episode({ episode }: EpisodeProps) {
                     height={200}
                     src={episode.thumbnail}
                     objectFit="cover" />
-                <button type="button">
+                <button type="button" onClick={() => play(episode)}>
                     <img src="/play.svg" alt="Play Episode" />
                 </button>
             </div>
